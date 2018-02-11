@@ -1,0 +1,49 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+# Statistical_Inference Course Project Part 2: ToothGrowth Dataset Analysis
+## Author: Michael Nichols
+
+Basic Summary of the Dataset:
+
+ToothGrowth - data frame with 60 observations on 3 variables
+- len	numeric	Tooth length
+- supp	factor	Supplement type (VC or OJ).
+---VC: ascorbic acid tablet
+---OJ: orange juice
+- dose	numeric	Dose in milligrams/day
+```{r BasicSummary}
+#load libraries
+library(ggplot2)
+library(datasets)
+data("ToothGrowth")
+
+str(ToothGrowth)
+head(ToothGrowth)
+summary(ToothGrowth)
+
+#basic plot of the summary statistics
+qplot(factor(dose), len, data = ToothGrowth, color = factor(dose), facets = supp ~ ., geom = c("boxplot", "jitter"))
+```
+
+2. T-Test Evaluation
+
+```{r ConfInf_HypothesisTests}
+# Explore effects of supplement type on tooth growth by performing a two-sample t-test for the difference in tooth length by supplement (without including the dosage). We assume a confidence level of 95% and unequal variances.
+
+ToothTTest <- t.test(len ~ supp, data = ToothGrowth, var.equal = FALSE, paired = FALSE)
+```
+
+3. Conclusions:
+
+```{r Conclusions}
+#show table of two sample t-test results for tooth growth by supplement
+tTestResults <- matrix(data.frame(ToothTTest$p.value, ToothTTest$conf.int[1], ToothTTest$conf.int[2], ToothTTest$estimate[1], ToothTTest$estimate[2]))
+rownames(tTestResults) <- c("p-value", "Lower Conf Int", "Upper Conf Int", "OJ Mean", "VC Mean")
+colnames(tTestResults) <- "Results"
+
+print(tTestResults)
+```
+We do not reject the Null hypothesis, as the p.value is 0.061 which is greater than the 0.05 threshold and the confidence interval contains 0. 
